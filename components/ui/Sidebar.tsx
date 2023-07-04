@@ -1,7 +1,7 @@
-import { useContext } from "react"
+import { UIContext } from "@/context/ui"
 import { InboxOutlined, MailOutlineOutlined } from "@mui/icons-material"
 import { Box, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Typography } from "@mui/material"
-import { UIContext } from "@/context/ui"
+import { useContext } from "react"
 
 const menuItems: string[] = ['Inbox', 'Starred', 'Send Email', 'Drafts']
 

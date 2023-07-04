@@ -1,10 +1,11 @@
-import { Box } from "@mui/material"
+import React, { FC } from "react"
 import Head from "next/head"
-import { FC } from "react"
+import { Box } from "@mui/material"
 import { Navbar, Sidebar } from "../ui"
 
 interface Props {
   title?: string; 
+  children: React.ReactNode
 }
 
 export const Layout:FC<Props> = ({title = 'OpenJiraApp', children}) => {
@@ -14,8 +15,8 @@ export const Layout:FC<Props> = ({title = 'OpenJiraApp', children}) => {
         <title>{title}</title>
       </Head>
 
-      <Navbar></Navbar>
-      <Sidebar></Sidebar>
+      <Navbar/>
+      <Sidebar/>
 
       <Box sx={{padding: '10px 20px'}}>
         {children}

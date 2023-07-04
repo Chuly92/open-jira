@@ -1,7 +1,7 @@
-import { useContext } from "react"
 import { UIContext } from "@/context/ui"
-import { AppBar, IconButton, Toolbar, Typography } from "@mui/material"
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined'
+import { AppBar, IconButton, Toolbar, Typography } from "@mui/material"
+import { useContext } from "react"
 
 export const Navbar = () => {
 
