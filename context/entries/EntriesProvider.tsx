@@ -2,11 +2,12 @@ import { FC, useEffect, useReducer } from 'react'
 import { EntriesContext, entriesReducer } from './'
 import { Entry } from '@/interfaces'
 import { entriesApi } from '@/apis'
+import { useSnackbar } from 'notistack'
 // import { v4 as uuidv4 } from 'uuid'
 
 //In this file I have the state of my app
 export interface EntriesState {
-  entries: Entry[];
+  entries: Entry[]
 }
 
 interface Props {
@@ -20,10 +21,11 @@ const Entries_INITIAL_STATE: EntriesState = {
 export const EntriesProvider: FC<Props> = ({ children }) => {
 
   const [state, dispatch] = useReducer(entriesReducer, Entries_INITIAL_STATE)
+  const { enqueueSnackbar } = useSnackbar()
 
   const addNewEntry = async (description: string) => {
-    const {data} = await entriesApi.post<Entry>('/entries', {description})
-    dispatch( {type: '[Entry] - Add Entry', payload: data})
+    const { data } = await entriesApi.post<Entry>('/entries', { description })
+    dispatch({ type: '[Entry] - Add Entry', payload: data })
     // const newEntry: Entry = {
     //   _id: uuidv4(),
     //   description,
@@ -32,27 +34,34 @@ export const EntriesProvider: FC<Props> = ({ children }) => {
     // }
   }
 
-  const updateEntry = async ({_id, description, status}: Entry) => {
+  const updateEntry = async ({ _id, description, status }: Entry, showSnackBar = false) => {
 
     try {
-      const {data} = await entriesApi.put<Entry>(`/entries/${_id}`, { description, status})
-      dispatch({type: '[Entry] - Entry-Updated', payload: data})      
+      const { data } = await entriesApi.put<Entry>(`/entries/${_id}`, { description, status })
+      dispatch({ type: '[Entry] - Entry-Updated', payload: data })
+
+      if (showSnackBar) {
+        enqueueSnackbar('Entrada actualizada', {
+          variant: 'success',
+          autoHideDuration: 1500
+        })
+      }
     } catch (error) {
-      console.log({error})
+      console.log({ error })
     }
-    
+
   }
 
   const refreshEntries = async () => {
-    const {data} = await entriesApi.get<Entry[]>('/entries')
-    dispatch({type: '[Entry] - Refresh-Data', payload: data})    
+    const { data } = await entriesApi.get<Entry[]>('/entries')
+    dispatch({ type: '[Entry] - Refresh-Data', payload: data })
   }
-  
+
   useEffect(() => {
     refreshEntries()
 
   }, [])
-  
+
 
   return (
     <EntriesContext.Provider value={{
@@ -62,7 +71,7 @@ export const EntriesProvider: FC<Props> = ({ children }) => {
       addNewEntry,
       updateEntry
     }}>
-      { children }
+      {children}
     </EntriesContext.Provider>
   )
 }

@@ -1,10 +1,12 @@
-import { ChangeEvent, FC, useMemo, useState } from 'react'
+import { ChangeEvent, FC, useContext, useMemo, useState } from 'react'
 import { GetServerSideProps } from 'next'
 import { Layout } from '@/components/layouts'
 import { Entry, EntryStatus } from '@/interfaces'
 import { DeleteOutline, SaveOutlined } from '@mui/icons-material'
 import { capitalize, Button, Card, CardActions, CardContent, CardHeader, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField, IconButton } from '@mui/material'
 import { dbEntries } from '@/database'
+import { EntriesContext } from '@/context/entries'
+import {dateFunctions} from '@/utils';
 
 const validStatus: EntryStatus[] = ['pending', 'in-progress', 'finished']
 
@@ -17,6 +19,8 @@ export const EntryPage: FC<Props> = ({entry}) => {
   const [inputValue, setInputValue] = useState(entry.description)
   const [status, setStatus] = useState<EntryStatus>(entry.status)
   const [touched, setTouched] = useState(false)
+
+  const {updateEntry} = useContext(EntriesContext)
   
   const isNotValid = useMemo(() => inputValue.length <=0 && touched, [inputValue, touched])
 
@@ -30,8 +34,17 @@ export const EntryPage: FC<Props> = ({entry}) => {
     setStatus(e.target.value as EntryStatus)
   }
 
-  const handleOnClick = () => {
+  const onSave = () => {
+    
+    if(inputValue.trim().length === 0) return
 
+    const updatedEntry: Entry = {
+      ...entry,
+      status,
+      description: inputValue
+    }
+
+    updateEntry(updatedEntry, true)
   }
   
 
@@ -46,7 +59,7 @@ export const EntryPage: FC<Props> = ({entry}) => {
             <Card>
               <CardHeader 
                 title='Entrada' 
-                subheader={`Creada hace ... minutos`}
+                subheader={`Creada hace ${dateFunctions.getFormatDistanceToNow(entry.createdAt)}`}
               />
               <CardContent>
                 <TextField
@@ -90,7 +103,7 @@ export const EntryPage: FC<Props> = ({entry}) => {
                 variant='contained'
                 fullWidth
                 sx={{margin: 1}}
-                onClick={handleOnClick}
+                onClick={onSave}
                 disabled={inputValue.length <= 0}
                 >
                   Save
